@@ -1,28 +1,28 @@
 <template>
   <div class="content">
     <DrawerComponent @changePage="handleChangePage" />
-    <div v-if="selectedPage === 'courses'" class="right-section">
-      
+    <div v-if="selectedPage === 'services'" class="right-section">
+      <ServicesComponent />
     </div>
-    <div v-if="selectedPage === 'users'" class="right-section">
-
-    </div>
-    <div v-if="selectedPage === 'companies'" class="right-section">
-
-    </div>
+    <div v-if="selectedPage === 'users'" class="right-section"></div>
+    <div v-if="selectedPage === 'companies'" class="right-section"></div>
   </div>
-
 </template>
 
 <script lang="ts">
 
+import ServicesComponent from '@/components/Services.vue';
+
 export default {
   name: 'HomeComponent',
 
+  components: {
+    ServicesComponent,
+  },
 
   data() {
     return {
-      selectedPage: 'courses'
+      selectedPage: 'services'
     }
   },
 

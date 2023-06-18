@@ -4,7 +4,7 @@ interface IContent {
   title: string
 }
 
-interface ICourse {
+interface IService {
   contentInHours: number
   contents: IContent[]
   description: string
@@ -13,4 +13,4 @@ interface ICourse {
   title: string
 }
 
-export type { ICourse }
+export type { IService }
