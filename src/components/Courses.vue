@@ -1,12 +1,12 @@
 <template>
   <div class="tableContent">
-    <v-toolbar class="tableToolbar">
+    <v-toolbar v-if="role === 'master'" class="tableToolbar">
       <v-btn class="addCourseBtn text-white" rounded="lg" @click="openCreateDialog">
         Add Course
       </v-btn>
     </v-toolbar>
     <v-table fixed-header hover class="courseTable">
-      <template v-if="courses">
+      <template v-if="courses.length > 0">
         <thead>
           <tr>
             <th>Title</th>
@@ -21,10 +21,10 @@
             <td>{{ item.level }}</td>
             <td class="text-center">{{ item.contentInHours }}</td>
             <td class="actionsButtons">
-              <v-btn text @click="openEditDialog(item.id)" class="editBtn">
+              <v-btn :disabled="role != 'master'" text @click="openEditDialog(item.id)" class="editBtn">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
-              <v-btn text @click="deleteCourse(item.id)" class="deleteBtn">
+              <v-btn :disabled="role != 'master'" text @click="openDeleteDialog(item.id)" class="deleteBtn">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </td>
@@ -51,11 +51,15 @@
       </template>
     </v-table>
     <CreateCourse ref="createCourse" @savedCourse="addCourse" @editedCourse="editCourse" />
+    <DeleteItemConfirmation ref="deleteItem" @confirmed="deleteCourse" />
   </div>
 </template>
 
 <script lang="ts">
 import CreateCourse from '@/components/CreateCourse.vue'
+import DeleteItemConfirmation from '@/components/DeleteItemConfirmation.vue'
+
+import { useAuthStore } from '@/stores/auth'
 
 import type { IErrorResponse } from '@/types/errors'
 
@@ -63,7 +67,8 @@ export default {
   name: 'CoursesComponent',
 
   components: {
-    CreateCourse
+    CreateCourse,
+    DeleteItemConfirmation
   },
 
   async created() {
@@ -88,6 +93,11 @@ export default {
         courses[this.currentPage] = this.courses.slice(Math.min(this.courses.length-this.numberOfnewElements, offset), offset+10)
       }
       return courses;
+    }, 
+    role() {
+      const authStore = useAuthStore()
+
+      return authStore.role || ''
     }
   },
 
@@ -98,6 +108,9 @@ export default {
     openEditDialog(id: string): void {
       const course = this.courses.find((course) => course.id === id);
       (this.$refs.createCourse as any).openDialog(course)
+    },
+    openDeleteDialog(id: string): void {
+      (this.$refs.deleteItem as any).openDialog(id)
     },
     async addCourse(courseData: any) {
       this.courses.push(courseData)
@@ -135,9 +148,11 @@ export default {
       if (!this.pageCourses[page]) {
         try {
           const { data: courses } = await this.$axios.get('/courses', { params: { page } })
-          this.totalPages = courses.totalPages
-          this.numberOfnewElements = courses.data.length;
-          this.courses.push(...courses.data);
+          if (courses.data) {
+            this.totalPages = courses.totalPages
+            this.numberOfnewElements = courses.data.length;
+            this.courses.push(...courses.data);
+          }
         } catch (e: any) {
           const error: IErrorResponse = e.response.data.error
           this.$toast.error(error.description)
