@@ -10,9 +10,6 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 
-// Axios
-import axios from './globals/plugins/axios'
-
 // Vue - toast
 import ToastPlugin from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-bootstrap.css'
@@ -38,8 +35,4 @@ app.use(router)
 app.use(createPinia())
 app.use(vuetify)
 app.use(ToastPlugin)
-app.use(axios, {
-  baseUrl: 'http://localhost:8080/api/'
-})
-
 app.mount('#app')

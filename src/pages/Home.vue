@@ -2,32 +2,23 @@
   <div class="content">
     <DrawerComponent @changePage="handleChangePage" />
     <div v-if="selectedPage === 'courses'" class="right-section">
-      <CoursesComponent />
+      
     </div>
     <div v-if="selectedPage === 'users'" class="right-section">
-      <UsersComponent />
+
     </div>
     <div v-if="selectedPage === 'companies'" class="right-section">
-      <CompaniesComponent />
+
     </div>
   </div>
+
 </template>
 
 <script lang="ts">
-import DrawerComponent from '@/components/Drawer.vue'
-import CoursesComponent from '@/components/Courses.vue'
-import CompaniesComponent from '@/components/Companies.vue'
-import UsersComponent from '@/components/Users.vue'
 
 export default {
   name: 'HomeComponent',
 
-  components: {
-    DrawerComponent,
-    CoursesComponent,
-    CompaniesComponent,
-    UsersComponent
-  },
 
   data() {
     return {

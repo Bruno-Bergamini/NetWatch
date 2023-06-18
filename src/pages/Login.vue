@@ -41,13 +41,9 @@
         ></v-text-field>
       </div>
 
-      <span @click="switchForgotPassword" class="link forgot-password-text">
-        Forgot password?
-      </span>
-
       <v-btn
         @click="login"
-        class="login-button text-white"
+        class="login-button text-white mt-6"
         height="65"
         color="#3e78fc"
         rounded="lg"
@@ -68,8 +64,7 @@
 <script lang="ts">
 import LogoSection from '@/components/LogoSection.vue'
 
-import type { ILogin, ILoginResponse } from '@/types/login'
-import type { IUserData } from '@/types/user'
+import type { ILogin, } from '@/types/login'
 import type { IErrorResponse } from '@/types/errors'
 
 import { useAuthStore } from '@/stores/auth'
@@ -106,11 +101,7 @@ export default {
     },
 
     switchFirstAccess(): void {
-      this.$router.push('/first-access')
-    },
-
-    switchForgotPassword(): void {
-      this.$router.push('/forgot-password')
+      this.$router.push('/finish-signup')
     },
 
     switchHome(): void {
@@ -130,19 +121,14 @@ export default {
         
         this.isLoading = true
 
-        const { data: loginData } = await this.$axios.post<ILoginResponse>(
-          '/auth/login',
-          signinData
-        )
+        const users = JSON.parse(localStorage.getItem("users") ?? "[]");
+        const user = users.find( (user: any) => signinData.password === user.password && signinData.cpf === user.cpf)
 
-        authStore.updateToken(loginData.accessToken, loginData.expiresIn)
+        authStore.updateUserData(user)
 
-        const { data: userData } = await this.$axios.get<IUserData>('/users/me')
-        authStore.updateUserData(userData)
-
+ 
         this.isLoading = false
         this.$toast.success('Logged in successfully')
-
         this.switchHome()
       } catch (e: any) {
         const error: IErrorResponse = e.response.data.error

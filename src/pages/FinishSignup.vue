@@ -133,10 +133,6 @@ export default {
     }
   },
 
-  mounted() {
-    this.validateToken()
-  },
-
   methods: {
     required(v: any) {
       return !!v || 'Field is required'
@@ -190,18 +186,6 @@ export default {
       return true
     },
 
-    validateToken(): void {
-      const { t } = this.$route.query
-
-      if (t === undefined) {
-        this.$toast.error('Invalid token', {
-          duration: 5000
-        })
-
-        this.$router.push('/login')
-      }
-    },
-
     verifyFields(): boolean {
       if (!this.verifyEmptyFields()) return false
 
@@ -211,7 +195,6 @@ export default {
       this.passwordErrors = []
       this.dateErrors = []
 
-      this.validateToken()
       this.validateCPF(this.cpf)
       this.verifyPasswords()
       this.validateDate(this.birthdayDate)
@@ -238,11 +221,9 @@ export default {
           password: this.password
         }
 
-        await this.$axios.post('/auth/finish-signup', signupData, {
-          params: {
-            t: this.$route.query.t
-          }
-        })
+        let users = JSON.parse(localStorage.getItem("users") ?? "[]");
+        users = [...users, signupData];
+        localStorage.setItem("users", JSON.stringify(users));
 
         this.$toast.success('Account created successfully!')
 
