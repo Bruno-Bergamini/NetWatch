@@ -4,7 +4,7 @@
 
     <div class="section right-section">
       <div class="greeting-container">
-        <span class="greeting-text"> Welcome to Cybersafe Academy! </span>
+        <span class="greeting-text"> Welcome to NetWatch! </span>
 
         <span class="greeting-subtext">
           Protect your company with the power of personalized in digital
@@ -111,7 +111,6 @@ export default {
     async login() {
       const authStore = useAuthStore()
 
-      try {
         if (this.verifyEmptyFields()) return
 
         const signinData: ILogin = {
@@ -124,18 +123,15 @@ export default {
         const users = JSON.parse(localStorage.getItem("users") ?? "[]");
         const user = users.find( (user: any) => signinData.password === user.password && signinData.cpf === user.cpf)
 
-        authStore.updateUserData(user)
-
- 
-        this.isLoading = false
-        this.$toast.success('Logged in successfully')
-        this.switchHome()
-      } catch (e: any) {
-        const error: IErrorResponse = e.response.data.error
-
-        this.isLoading = false
-        this.$toast.error(error.description)
-      }
+        if (user) {
+          authStore.updateUserData(user)
+          this.isLoading = false
+          this.$toast.success('Logged in successfully')
+          this.switchHome()
+        } else {
+          this.isLoading = false
+          this.$toast.error("account not found")
+        }
     }
   }
 }
